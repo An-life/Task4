@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { amber } from '@mui/material/colors'
 import Box from '@mui/material/Box'
-import BlockIcon from '@mui/icons-material/Block'
 import Container from '@mui/material/Container'
 import CircularProgress from '@mui/material/CircularProgress'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import IconButton from '@mui/material/IconButton'
+import LogoutIcon from '@mui/icons-material/Login'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonOffIcon from '@mui/icons-material/PersonOff'
 import Tooltip from '@mui/material/Tooltip'
@@ -21,7 +22,7 @@ import {
   useDeleteUsersMutation,
   useGetUsersQuery,
 } from '../../api/authApi'
-import { IUserResponse } from '../../types/common'
+import { IUsersDataForTable } from '../../types/common'
 
 import styles from './styles.module.scss'
 
@@ -32,16 +33,23 @@ function UserPage(): JSX.Element {
   const userData = useSelector(getUserInfo)
   const dispatch = useDispatch()
 
+  const navigate = useNavigate()
+
   const { data, isFetching } = useGetUsersQuery()
   const [deleteUser] = useDeleteUsersMutation()
   const [changeStatus] = useChangeUsersStatusMutation()
 
+  const logoutHandler = (): void => {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+
   useEffect(() => {
     if (data?.length) {
-      const user = data?.filter((item) => item.id === userData.id)
+      const user = data?.filter((item) => item._id === userData.id)
       dispatch(
         addUserData({
-          id: user[0]?.id,
+          id: user[0]?._id,
           status: user[0]?.status,
         }),
       )
@@ -60,9 +68,9 @@ function UserPage(): JSX.Element {
     },
   ]
 
-  const usersData: IUserResponse[] | undefined = data?.map(
-    ({ id, name, email, status, registrationDate, loginDate }) => ({
-      id,
+  const usersData: IUsersDataForTable[] | undefined = data?.map(
+    ({ _id, name, email, status, registrationDate, loginDate }) => ({
+      id: _id,
       name,
       email,
       status,
@@ -105,6 +113,20 @@ function UserPage(): JSX.Element {
 
   return (
     <Container fixed sx={{ maxWidth: 'xl' }}>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'raw',
+          justifyContent: 'flexEnd',
+        }}
+      >
+        <Tooltip title="Log out">
+          <IconButton onClick={logoutHandler}>
+            <LogoutIcon fontSize="large" sx={{ color: amber[500] }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
       {isFetching ? (
         <CircularProgress />
       ) : (

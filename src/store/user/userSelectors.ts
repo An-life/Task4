@@ -1,4 +1,5 @@
-import { IUserRegistrationData } from '../../types/common';
-import { RootState } from '../store';
+import { IUserRegistrationData } from '../../types/common'
+import { RootState } from '../store'
 
-export const getUserInfo = (state: RootState): IUserRegistrationData => state.user;
+export const getUserInfo = (state: RootState): IUserRegistrationData =>
+  state.user

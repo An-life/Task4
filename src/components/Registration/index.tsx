@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Navigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import { useForm } from 'react-hook-form'
 import 'react-toastify/dist/ReactToastify.css'
@@ -29,11 +28,10 @@ function Registration(): JSX.Element {
 
   const {
     registration,
-    isSuccessRegistration,
     isLoadingRegistration,
     registrationError,
   } = useRegistration()
-  const { login, isSuccessLogin, isLoadingLogin, loginError } = useLogin()
+  const { login, isLoadingLogin, loginError } = useLogin()
 
   const {
     register,
@@ -65,10 +63,6 @@ function Registration(): JSX.Element {
     } else {
       await login({ email, password })
     }
-  }
-
-  if (isSuccessRegistration || isSuccessLogin) {
-    ;<Navigate to={'/userPage'} />
   }
 
   return (

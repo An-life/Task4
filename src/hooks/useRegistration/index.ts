@@ -1,33 +1,34 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-import { addUserData } from '../../store/user/userSlice';
-import { IRegistration } from './types';
-import { usePostRegistrationMutation } from '../../api/authApi';
+import { addUserData } from '../../store/user/userSlice'
+import { IRegistration } from './types'
+import { usePostRegistrationMutation } from '../../api/authApi'
 
 export const useRegistration = (): IRegistration => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const [registration, { data, isSuccess, isLoading, error }] =
-    usePostRegistrationMutation();
+  const [
+    registration,
+    { data, isSuccess, isLoading, error },
+  ] = usePostRegistrationMutation()
 
   useEffect(() => {
     if (isSuccess && data) {
-      localStorage.setItem('token', data.accessToken);
-      dispatch(
-        addUserData({ id: data.user.id, status: data.user.status }),
-      );
+      localStorage.setItem('token', data.accessToken)
+      dispatch(addUserData({ id: data.user.id, status: data.user.status }))
+      navigate('/userPage')
     }
-  }, [isSuccess]);
+  }, [isSuccess])
 
-  const isSuccessRegistration = isSuccess;
-  const isLoadingRegistration = isLoading;
-  const registrationError = error;
+  const isLoadingRegistration = isLoading
+  const registrationError = error
 
   return {
     registration,
-    isSuccessRegistration,
     isLoadingRegistration,
     registrationError,
-  };
-};
+  }
+}

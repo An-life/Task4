@@ -1,27 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 import {
   IChangeStatus,
   IRegistrationData,
   IRegistrationResponse,
-  IUserResponse
-} from './../../types/common';
-import { baseUrl } from './../constants';
+  IUserResponse,
+} from './../../types/common'
+import { baseUrl } from './../constants'
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
     baseUrl,
-    prepareHeaders: headers => {
-      const token = localStorage.getItem('token') ?? '';
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('token') ?? ''
       if (token !== '') {
-        headers.set('authorization', `Bearer ${token}`);
+        headers.set('authorization', `Bearer ${token}`)
       }
-      return headers;
+      return headers
     },
   }),
   tagTypes: ['Users'],
-  endpoints: build => ({
+  endpoints: (build) => ({
     postRegistration: build.mutation<IRegistrationResponse, IRegistrationData>({
       query: ({ ...registrationData }) => ({
         url: 'registration',
@@ -38,7 +38,7 @@ export const authApi = createApi({
       }),
     }),
     deleteUsers: build.mutation<{}, string[]>({
-      query: deletedUsers => ({
+      query: (deletedUsers) => ({
         url: 'deleteUsers',
         method: 'POST',
         body: { users: [...deletedUsers] },
@@ -46,7 +46,7 @@ export const authApi = createApi({
       invalidatesTags: ['Users'],
     }),
     changeUsersStatus: build.mutation<{}, IChangeStatus>({
-      query: changedData => ({
+      query: (changedData) => ({
         url: 'changeUsersStatus',
         method: 'POST',
         body: { ...changedData },
@@ -61,7 +61,7 @@ export const authApi = createApi({
       providesTags: () => ['Users'],
     }),
   }),
-});
+})
 
 export const {
   useChangeUsersStatusMutation,
@@ -70,4 +70,4 @@ export const {
   useGetUsersQuery,
   usePostRegistrationMutation,
   usePostLoginMutation,
-} = authApi;
+} = authApi

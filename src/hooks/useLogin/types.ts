@@ -1,6 +1,5 @@
 export interface ILogin {
-  login: any;
-  isSuccessLogin: boolean;
-  isLoadingLogin: boolean;
-  loginError: any;
+  login: any
+  isLoadingLogin: boolean
+  loginError: any
 }

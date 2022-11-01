@@ -16,6 +16,15 @@ export interface IRegistrationData {
 }
 
 export interface IUserResponse {
+  _id: string
+  name: string
+  email: string
+  status: 'active' | 'block'
+  registrationDate: string
+  loginDate: string
+}
+
+export interface IUsersDataForTable {
   id: string
   name: string
   email: string
