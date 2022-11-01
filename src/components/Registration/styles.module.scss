@@ -1,0 +1,11 @@
+@import './../../styles/mixins.scss';
+@import './../../styles/colors.scss';
+
+.buttonContainer {
+  @include flex(center, center, row);
+}
+
+.errorMessage {
+    color: $color-rad;
+  }
+  
