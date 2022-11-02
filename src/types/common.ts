@@ -37,3 +37,7 @@ export interface IChangeStatus {
   users: string[]
   status: 'active' | 'block'
 }
+
+export interface IIsAuth {
+  isAuth: boolean
+}

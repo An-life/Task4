@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 
 import { addUserData } from '../../store/user/userSlice'
 import { IRegistration } from './types'
@@ -8,7 +7,6 @@ import { usePostRegistrationMutation } from '../../api/authApi'
 
 export const useRegistration = (): IRegistration => {
   const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   const [
     registration,
@@ -19,14 +17,15 @@ export const useRegistration = (): IRegistration => {
     if (isSuccess && data) {
       localStorage.setItem('token', data.accessToken)
       dispatch(addUserData({ id: data.user.id, status: data.user.status }))
-      navigate('/userPage')
     }
-  }, [isSuccess])
+  }, [data, dispatch, isSuccess])
 
+const isSuccessRegistration=isSuccess
   const isLoadingRegistration = isLoading
   const registrationError = error
 
   return {
+    isSuccessRegistration,
     registration,
     isLoadingRegistration,
     registrationError,

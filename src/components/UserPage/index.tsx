@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { amber } from '@mui/material/colors'
@@ -14,8 +14,9 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonOffIcon from '@mui/icons-material/PersonOff'
 import Tooltip from '@mui/material/Tooltip'
 
-import { addUserData } from '../../store/user/userSlice'
 import { ButtonOptions } from './types'
+import { changeIsAuth } from '../../store/isAuth/isAuthSlice'
+import { getIsAuthInfo } from '../../store/isAuth/isAuthSelectors'
 import { getUserInfo } from '../../store/user/userSelectors'
 import {
   useChangeUsersStatusMutation,
@@ -26,14 +27,15 @@ import { IUsersDataForTable } from '../../types/common'
 
 import styles from './styles.module.scss'
 
+
 function UserPage(): JSX.Element {
   const [selectionModel, setSelectionModel] = useState<Array<string | number>>(
     [],
   )
-  const userData = useSelector(getUserInfo)
   const dispatch = useDispatch()
-
-  const navigate = useNavigate()
+  
+  const {isAuth} = useSelector(getIsAuthInfo)
+  const userData = useSelector(getUserInfo)
 
   const { data, isFetching } = useGetUsersQuery()
   const [deleteUser] = useDeleteUsersMutation()
@@ -41,20 +43,8 @@ function UserPage(): JSX.Element {
 
   const logoutHandler = (): void => {
     localStorage.removeItem('token')
-    navigate('/')
+    dispatch(changeIsAuth({ isAuth: false }))
   }
-
-  useEffect(() => {
-    if (data?.length) {
-      const user = data?.filter((item) => item._id === userData.id)
-      dispatch(
-        addUserData({
-          id: user[0]?._id,
-          status: user[0]?.status,
-        }),
-      )
-    }
-  }, [data])
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 150 },
@@ -81,6 +71,10 @@ function UserPage(): JSX.Element {
 
   const deleteUsersHandler = async (): Promise<void> => {
     await deleteUser(selectionModel as string[])
+    const user = selectionModel.filter((item) => item === userData.id)
+    if (user?.length) {
+      logoutHandler()
+    }
   }
 
   const changeStatusHandler = async (value: string): Promise<void> => {
@@ -88,6 +82,10 @@ function UserPage(): JSX.Element {
       users: selectionModel as string[],
       status: value as 'active' | 'block',
     })
+    const user = selectionModel.filter((item) => item === userData.id)
+    if (user?.length && value === 'block') {
+      logoutHandler()
+    }
   }
 
   const buttonOptions: ButtonOptions[] = [
@@ -107,7 +105,7 @@ function UserPage(): JSX.Element {
     },
   ]
 
-  if (userData.status !== 'active') {
+  if (!isAuth) {
     return <Navigate to={'/'} />
   }
 

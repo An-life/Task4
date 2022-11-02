@@ -27,8 +27,8 @@ export const authApi = createApi({
         url: 'registration',
         method: 'POST',
         body: registrationData,
-        invalidatesTags: ['Users'],
       }),
+      invalidatesTags: ['Users'],
     }),
     postLogin: build.mutation<IRegistrationResponse, IRegistrationData>({
       query: ({ ...loginData }) => ({

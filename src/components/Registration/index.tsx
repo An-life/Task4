@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
 import 'react-toastify/dist/ReactToastify.css'
 
 import Box from '@mui/material/Box'
@@ -16,7 +18,10 @@ import TextField from '@mui/material/TextField'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
+import { changeIsAuth } from '../../store/isAuth/isAuthSlice'
+import { getIsAuthInfo } from '../../store/isAuth/isAuthSelectors'
 import { IRegistrationInputs } from './types'
+import { getUserInfo } from '../../store/user/userSelectors'
 import { useLogin } from './../../hooks/useLogin'
 import { useRegistration } from '../../hooks/useRegistration'
 
@@ -26,18 +31,31 @@ function Registration(): JSX.Element {
   const [isRegistered, setIsRegistered] = useState(true)
   const [showPassword, setShowPassword] = useState(true)
 
+  const dispatch = useDispatch()
+
+  const userData = useSelector(getUserInfo)
+  const {isAuth} = useSelector(getIsAuthInfo)
+
   const {
+    isSuccessRegistration,
     registration,
     isLoadingRegistration,
     registrationError,
   } = useRegistration()
-  const { login, isLoadingLogin, loginError } = useLogin()
+
+  const { isSuccessLogin, login, isLoadingLogin, loginError } = useLogin()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IRegistrationInputs>()
+
+  useEffect(() => {
+    if (isSuccessRegistration || isSuccessLogin) {
+      dispatch(changeIsAuth({ isAuth: true }))
+    }
+  }, [isSuccessRegistration, isSuccessLogin, dispatch])
 
   const mouseDownPasswordHandler = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -63,6 +81,16 @@ function Registration(): JSX.Element {
     } else {
       await login({ email, password })
     }
+  }
+
+  useEffect(()=>{
+    if (userData.status === 'block') {
+      dispatch(changeIsAuth({ isAuth: false }))
+    }
+  }, [dispatch, userData.status])
+
+  if (isAuth) {
+    return <Navigate to={'/userPage'} />
   }
 
   return (
